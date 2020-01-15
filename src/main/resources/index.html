@@ -29,10 +29,11 @@
 </form>
 
 
-First Name: <input id="fname"><br>
-Last Name: <input id="lname"><br>
-<form action="/person-controller/create" method="post">
-    <input id="create-button" type="submit" value="create"/>
+
+<form onSubmit="_postOnClick(event)">
+    First Name: <input id="fname"><br>
+    Last Name: <input id="lname"><br>
+    <button>Submit</button>
 </form>
 
 
@@ -46,25 +47,26 @@ class Person {
   }
 }
 
-let firstName = document.getElementById("fname").value;
-let lastName = document.getElementById("lname").value;
-let jsonPerson = new Person(0, firstName, lastName);
+function _postOnClick(event){
+    event.preventDefault();
 
-console.log(jsonPerson);
-
-_postOnClick(
-    "create-button",
-    "localhost:8091/person-controller/create",
-    jsonPerson);
-
-
-function _postOnClick(buttonId, endpoint, args){
-    $("#" + buttonId).click(function() {
+    let firstName = document.getElementById("fname").value;
+    let lastName = document.getElementById("lname").value;
+    let jsonPerson = new Person(0, firstName, lastName);
+    let endpoint =  "http://localhost:8091/person-controller/create";
+    let args = jsonPerson;
+    console.log(JSON.stringify(args));
         $.ajax({
+            crossDomain: true,
+            headers: {
+                'Accept': "application/json",
+                'Content-Type': 'application/json',
+                'Access-Control-Modifier': '*'
+            },
             type: "POST",
             url: endpoint,
-            data: args,
-            dataType: "application/x-www-form-urlencoded",
+            data: JSON.stringify(args),
+            dataType: "JSON",
             success : function(response) {
                     alert(JSON.stringify(response));
                     },
@@ -72,6 +74,5 @@ function _postOnClick(buttonId, endpoint, args){
                         alert('Error while request..');
                     }
         });
-    });
-}
+    };
 </script>
